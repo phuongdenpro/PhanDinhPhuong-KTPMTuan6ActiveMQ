@@ -10,13 +10,14 @@ import javax.jms.Queue;
 public class SendService {
     @Autowired
     Queue queue;
-    private JmsTemplate jmsTemplate;
+    private final JmsTemplate jmsTemplate;
+
     @Autowired
-    public SendService(JmsTemplate jmsTemplate){
+    public SendService(JmsTemplate jmsTemplate) {
         this.jmsTemplate = jmsTemplate;
     }
 
-    public void sendMessage(String message){
+    public void sendMessage(String message) {
         jmsTemplate.convertAndSend(queue, message);
     }
 }

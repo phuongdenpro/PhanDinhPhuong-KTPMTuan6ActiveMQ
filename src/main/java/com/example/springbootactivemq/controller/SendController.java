@@ -12,19 +12,12 @@ import javax.jms.Queue;
 
 @RestController
 public class SendController {
-
     @Autowired
-    private SendService  SendService;
-    @Autowired
-    JmsTemplate jmsTemplate;
-
-    @Autowired
-    Queue queue;
+    private SendService sendService;
 
     @GetMapping("/send/{message}")
-    public String sendMessage(@PathVariable("message")
-                          final String message) {
-        SendService.sendMessage(message);
-        return "Sent " + message;
+    public String sendMessage(@PathVariable("message") final String message) {
+        sendService.sendMessage(message);
+        return "Sent: " + message;
     }
 }
