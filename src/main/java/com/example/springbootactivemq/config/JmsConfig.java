@@ -1,47 +1,34 @@
 package com.example.springbootactivemq.config;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.command.ActiveMQQueue;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jms.annotation.EnableJms;
-import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
 
+import javax.jms.Queue;
+
 @Configuration
-@EnableJms
-@ComponentScan(basePackages = "com.example.springbootactivemq")
 public class JmsConfig {
-    private static final String BROKER_URL = "tcp://localhost:61616";
-    private static final String BROKER_USERNAME = "admin";
-    private static final String BROKER_PASSWORD = "admin";
+
+    @Value("${activemq.broker-url}")
+    private String brokerUrl;
 
     @Bean
-    public ActiveMQConnectionFactory connectionFactory() {
-        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
-        connectionFactory.setBrokerURL(BROKER_URL);
-        connectionFactory.setUserName(BROKER_USERNAME);
-        connectionFactory.setPassword(BROKER_PASSWORD);
+    public Queue queue() {
+        return new ActiveMQQueue("phuong.queue");
+    }
 
-        return connectionFactory;
+    @Bean
+    public ActiveMQConnectionFactory activeMQConnectionFactory() {
+        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory();
+        factory.setBrokerURL(brokerUrl);
+        return factory;
     }
 
     @Bean
     public JmsTemplate jmsTemplate() {
-        JmsTemplate template = new JmsTemplate();
-        template.setConnectionFactory(connectionFactory());
-
-        return template;
-    }
-
-    @Bean
-    public DefaultJmsListenerContainerFactory jmsListenerContainerFactory() {
-        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        factory.setConnectionFactory(connectionFactory());
-        factory.setConcurrency("3-10");
-        // true: using jms topic, false: using jms queue
-        factory.setPubSubDomain(false);
-
-        return factory;
+        return new JmsTemplate(activeMQConnectionFactory());
     }
 }
